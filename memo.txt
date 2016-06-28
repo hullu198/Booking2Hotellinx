@@ -1,0 +1,20 @@
+Scripti ajetaan, avaa bookingin, kirjautuu sis‰‰n, p‰ivitt‰‰ varaukset j‰rjestelm‰‰n
+Varauksiin "Tilausm." v‰lilehdelle laitetaan tiedot maksukortista
+Pseudo:
+avaa booking
+kirjaudu sis‰‰n
+avaa uusin varaus
+Selaa varauksia hotellinxissa
+kirjoita sukunimi hauksi
+raiskaa tabia
+kirjoita p‰iv‰
+jos ei tuloksia:
+	lue varauksen tiedot
+	kirjaa j‰rjestelm‰‰n
+jos on:
+	Tee jotain, mink‰ avulla ihminen voi tarkistaa onko varaus jo tehty
+	siirry seuraavaan varaukseen
+
+asdasd:Huippu246
+
+http://pywinauto.readthedocs.io/en/latest/HowTo.html
