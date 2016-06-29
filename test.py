@@ -7,7 +7,14 @@ f = open("log.txt","w")
 app = application.Application()
 app.connect(path=r"C:\Program Files\Hotellinx Suite\Foflinx.exe")
 months = dict((v,k) for k,v in enumerate(calendar.month_name))
-
+titles = {'Booking · Booking.com': 'booking',
+          'Booking.com Extranet': 'login',
+          'Welcome to the Extranet · Booking.com': 'welcome',
+          'Bookings · Booking.com': 'bookings',
+          'Credit card details · Booking.com': 'card_details',
+          '· Booking.com': 'verification',
+          'Unacknowleged Reservations · Booking.com': 'unacknowleged'
+          }
 #luuppaa varaukset läpi
 #Lue varauksen tiedot verkosta
 #Hae hotellinxista onko samanlainen varaus jo olemassa
@@ -27,13 +34,18 @@ def login():
     password_el.send_keys("Huippu246")
     password_el.submit()
     #Special cases (like "Unacknowleged Reservations....")
-    if(driver.title=="Welcome to the Extranet · Booking.com"):
+    if(current_page()=="welcome"):
         log("Login succesful")
         return True
+    elif(current_page()=="verification"):
+        log("sms verification needed")
+        verification()
+    elif(current_page()=="unacknowleged"):
+        #click that button
+        enter_function()
     else:
-        log("Failed to login to Booking.com")
-        input("Press enter to continue: ")
-        return False
+        log("Failed to login to Booking.com, current page's title is " + driver.title)
+        enter_function()
 
 class wait_for_page_load(object):
     def __init__(self, browser):
@@ -62,6 +74,7 @@ def go_to_bookings():
     else:
         log("Failed to enter bookings")
         input("Press enter to continue: ")
+        enter_function()
         return False
 
 def verification():
@@ -76,6 +89,8 @@ def verification():
         driver.find_element_by_class_name("btn-default").click()
         return True
     else:
+        driver.find_element_by_class_name("send-me-pin").click()
+        enter_function()
         log("Didn't find success text, abort")
     #Send sms to right number
     #Any way to verificate automatically?
@@ -85,6 +100,7 @@ def loop_bookings():
     if(str(driver.title) != "Bookings · Booking.com"):
         log("incorrect page, it's " + str(driver.title))
         input("Press enter to continue: ")
+        enter_function()
         return False
     bookings = driver.execute_script("return $('tbody>tr')")
     for i in bookings:
@@ -104,6 +120,29 @@ def loop_bookings():
             fill it under "Tilausm."
         """
         pass        
+
+def current_page():
+    page = titles[driver.title]
+    if(page == "verification"):
+        if(len(driver.find_elements_by_class_name("enter-pin-div"))>0):
+            return "enter_pin"
+        elif(len(driver.find_elements_by_class_name("success"))>0):
+            return "verified"
+    else:
+        return page
+        
+def enter_function():
+    x = input("Please enter function name: ")
+    while(True):
+        if(x ==""):
+            return False
+            break
+        try:
+            globals()[x]()
+            break
+            return True
+        except:
+            x = input("Incorrect function, try again: " + str(sys.exc_info()[0]))
 
 def reservation_exists(name, arrival, leave):
     return True

@@ -18,3 +18,14 @@ jos on:
 asdasd:Huippu246
 
 http://pywinauto.readthedocs.io/en/latest/HowTo.html
+
+page names:
+verification
+enter_pin
+verified
+login
+unacknowleged
+welcome
+booking
+bookings
+card_details
