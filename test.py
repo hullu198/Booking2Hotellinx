@@ -14,6 +14,7 @@ months = dict((v,k) for k,v in enumerate(calendar.month_name))
 #jos ei, tee
 #jos on, seuraava varaus
 #Kirjoita logi!
+#Maksutiedot OsoiteQ
 
 def login():
     global driver
@@ -31,6 +32,7 @@ def login():
         return True
     else:
         log("Failed to login to Booking.com")
+        input("Press enter to continue: ")
         return False
 
 class wait_for_page_load(object):
@@ -49,11 +51,9 @@ def go_to_bookings():
     driver.execute_script("return $('a:contains("+tmp+")')[0]").click()
     if(driver.title == "Bookings · Booking.com"):
         return True
-    elif(driver.title == " · Booking.com"):
-        log("Verification needed")
-        #Send sms to right number
-        #Any way to verificate automatically?
-        #continue executing when number has been entered
+    elif(driver.title == "· Booking.com"):
+        verification()
+        
     elif(driver.title == "Unacknowleged Reservations · Booking.com"):
         log("Unacknowleged Reservations")
         driver.find_element_by_class_name("btn").click()
@@ -61,11 +61,30 @@ def go_to_bookings():
         return True
     else:
         log("Failed to enter bookings")
+        input("Press enter to continue: ")
         return False
+
+def verification():
+    if(driver.title != "· Booking.com"):
+        return True
+    driver.find_element_by_id("text_option").click()
+    tmp = "selected"
+    driver.execute_script("$('select option:first-child').attr("+tmp+", "+tmp+");")
+    driver.find_elements_by_class_name("send-me-pin")[1].click()
+    input("Press enter after you have entered pin correctly: ")
+    if(len(driver.find_elements_by_class_name("success"))>0):
+        driver.find_element_by_class_name("btn-default").click()
+        return True
+    else:
+        log("Didn't find success text, abort")
+    #Send sms to right number
+    #Any way to verificate automatically?
+    #continue executing when number has been entered
 
 def loop_bookings():
     if(str(driver.title) != "Bookings · Booking.com"):
         log("incorrect page, it's " + str(driver.title))
+        input("Press enter to continue: ")
         return False
     bookings = driver.execute_script("return $('tbody>tr')")
     for i in bookings:
