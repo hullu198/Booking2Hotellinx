@@ -34,17 +34,18 @@ def login():
     password_el.send_keys("Huippu246")
     password_el.submit()
     #Special cases (like "Unacknowleged Reservations....")
-    if(current_page()=="welcome"):
+    page = current_page()
+    if(page=="welcome"):
         log("Login succesful")
         return True
-    elif(current_page()=="verification"):
+    elif(page=="verification"):
         log("sms verification needed")
         verification()
-    elif(current_page()=="unacknowleged"):
+    elif(page=="unacknowleged"):
         #click that button
         enter_function()
     else:
-        log("Failed to login to Booking.com, current page's title is " + driver.title)
+        log("Failed to login to Booking.com, current page's title is " + driver.title + "current_page() returned " + page)
         enter_function()
 
 class wait_for_page_load(object):
@@ -65,7 +66,6 @@ def go_to_bookings():
         return True
     elif(driver.title == "· Booking.com"):
         verification()
-        
     elif(driver.title == "Unacknowleged Reservations · Booking.com"):
         log("Unacknowleged Reservations")
         driver.find_element_by_class_name("btn").click()
@@ -81,12 +81,11 @@ def verification():
     if(driver.title != "· Booking.com"):
         return True
     driver.find_element_by_id("text_option").click()
-    tmp = "selected"
-    tmp_2 = "phone_id_sms"
-    driver.execute_script("$('select[name="+tmp_2+"] option:first-child').attr("+tmp+", "+tmp+");")
+    driver.execute_script("""$('select[name="phone_id_sms"] option:first-child').attr("selected", "selected");""")
     driver.find_elements_by_class_name("send-me-pin")[1].click()
     input("Press enter after you have entered pin correctly: ")
     if(len(driver.find_elements_by_class_name("success"))>0):
+        driver.execute_script('$("a.btn-default")[0].click()')
         return True
     else:
         driver.find_element_by_class_name("send-me-pin").click()
@@ -128,6 +127,8 @@ def current_page():
             return "enter_pin"
         elif(len(driver.find_elements_by_class_name("success"))>0):
             return "verified"
+        else:
+            return page
     else:
         return page
         
@@ -143,6 +144,19 @@ def enter_function():
             return True
         except:
             x = input("Incorrect function, try again: " + str(sys.exc_info()[0]))
+
+def solve():
+    page= current_page()
+    if(driver.title == "· Booking.com"):
+        verification()
+        solve()
+    elif(page == "unacknowleged"):
+        log("Unacknowleged Reservations")
+        driver.find_element_by_class_name("btn").click()
+        solve()
+    else:
+        log("Everything seems to be OK")
+        return True
 
 def reservation_exists(name, arrival, leave):
     return True
