@@ -82,11 +82,11 @@ def verification():
         return True
     driver.find_element_by_id("text_option").click()
     tmp = "selected"
-    driver.execute_script("$('select option:first-child').attr("+tmp+", "+tmp+");")
+    tmp_2 = "phone_id_sms"
+    driver.execute_script("$('select[name="+tmp_2+"] option:first-child').attr("+tmp+", "+tmp+");")
     driver.find_elements_by_class_name("send-me-pin")[1].click()
     input("Press enter after you have entered pin correctly: ")
     if(len(driver.find_elements_by_class_name("success"))>0):
-        driver.find_element_by_class_name("btn-default").click()
         return True
     else:
         driver.find_element_by_class_name("send-me-pin").click()
