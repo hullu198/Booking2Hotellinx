@@ -1,5 +1,6 @@
 from selenium import webdriver
 from pywinauto import application
+from pywinauto.application import Application
 import datetime, calendar, re
 driver = 0
 
@@ -33,7 +34,6 @@ def login():
     password_el = driver.find_element_by_id('password')
     password_el.send_keys("Huippu246")
     password_el.submit()
-    #Special cases (like "Unacknowleged Reservations....")
     page = current_page()
     if(page=="welcome"):
         log("Login succesful")
@@ -74,7 +74,6 @@ def go_to_bookings():
     else:
         log("Failed to enter bookings")
         input("Press enter to continue: ")
-        enter_function()
         return False
 
 def verification():
@@ -108,6 +107,10 @@ def loop_bookings():
         arrival = parse_date(values[6].text)
         departure = parse_date(values[7].text)
         log(name + " " + arrival + " " + departure)
+        if(search_reservation(name,arrival,departure)):
+            log("reservation for "+name+" on "+arrival + " exists")
+        else:
+            log("Make reservation for " + name + " on " + arrival)
         #if(reservation_exists(name, arrival,departure)):
         """
         TODO:
@@ -171,7 +174,29 @@ def end():
 def log(txt):
     f.write(str(txt) + ' - {:%d.%m.%Y %H:%M:%S}'.format(datetime.datetime.now()) + "\n")
     print(str(txt)+ ' - {:%H:%M:%S}'.format(datetime.datetime.now()))
+    
+def search_reservation(name="",arrival="",departure=""):
+    app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
+    thunderrtformdc = app.ThunderRT6FormDC
+    menu_item = thunderrtformdc.MenuItem(u'Etsi->&Varaukset...\tF7')
+    menu_item.Click()
+    thunderrtformdc2 = app.Varaukset
+    thunderrttextbox = thunderrtformdc2[u'Edit4']
+    thunderrttextbox.ClickInput()
+    thunderrttextbox.TypeKeys(name.split(" ")[0])
+    edit = thunderrtformdc2[u'Edit3']
+    edit.ClickInput()
+    edit.TypeKeys(arrival)
+    thunderrtcommandbutton = thunderrtformdc2[u'H&ae']
+    thunderrtcommandbutton.Click()
+    if(listviewwndclass.ItemCount()==0):
+        return False
+    else:
+        return True
+    
 if(login()):
     go_to_bookings()
     loop_bookings()
 end()
+
+
