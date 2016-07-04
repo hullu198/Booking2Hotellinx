@@ -111,6 +111,7 @@ def loop_bookings():
             log("reservation for "+name+" on "+arrival + " exists")
         else:
             log("Make reservation for " + name + " on " + arrival)
+            
         #if(reservation_exists(name, arrival,departure)):
         """
         TODO:
@@ -192,8 +193,10 @@ def search_reservation(name="",arrival="",departure=""):
     time.sleep(1)
     listviewwndclass = thunderrtformdc.Children()[15]
     if(listviewwndclass.ItemCount()==0):
+        thunderrtformdc.TypeKeys("{ESC}")
         return False
     else:
+        thunderrtformdc.TypeKeys("{ESC}")
         return True
     
 if(login()):
