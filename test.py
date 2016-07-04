@@ -1,7 +1,7 @@
 from selenium import webdriver
 from pywinauto import application
 from pywinauto.application import Application
-import datetime, calendar, re
+import datetime, calendar, re, time 
 driver = 0
 
 f = open("log.txt","w")
@@ -189,6 +189,8 @@ def search_reservation(name="",arrival="",departure=""):
     edit.TypeKeys(arrival)
     thunderrtcommandbutton = thunderrtformdc2[u'H&ae']
     thunderrtcommandbutton.Click()
+    time.sleep(1)
+    listviewwndclass = thunderrtformdc.Children()[15]
     if(listviewwndclass.ItemCount()==0):
         return False
     else:
