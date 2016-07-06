@@ -83,6 +83,7 @@ def verification():
     driver.execute_script("""$('select[name="phone_id_sms"] option:first-child').attr("selected", "selected");""")
     driver.find_elements_by_class_name("send-me-pin")[1].click()
     input("Press enter after you have entered pin correctly: ")
+    #Set focus to pin element
     if(len(driver.find_elements_by_class_name("success"))>0):
         driver.execute_script('$("a.btn-default")[0].click()')
         return True
@@ -101,28 +102,85 @@ def loop_bookings():
         enter_function()
         return False
     bookings = driver.execute_script("return $('tbody>tr')")
+    links = driver.execute_scrit("return $('tr>td.align_right>a')")
+    index = -1
     for i in bookings:
+        index +=1
+        #Check "Saapuvat" radio button
         values = i.find_elements_by_tag_name("td")
         name = values[4].text
         arrival = parse_date(values[6].text)
         departure = parse_date(values[7].text)
+        total = str(re.search('([0-9]+)',values[9].text).group(0))
+        comment = values[3]
         log(name + " " + arrival + " " + departure)
         if(search_reservation(name,arrival,departure)):
             log("reservation for "+name+" on "+arrival + " exists")
+            continue
         else:
+            """
+            TODO:
+            Get credit card details
+            find out room type
+            enter details to reservation
+            """
             log("Make reservation for " + name + " on " + arrival)
+            log("Open reservation at Booking")
+            links[index].click()
+            solve()
+            number = driver.execute_script('return $(".phone-info")[0].innerText').replace(" ","")
+            room_type = driver.execute_script('return $("tbody>tr:eq(4)>td:eq(1)").text()').strip()    
+            app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
+            thunderrtformdc = app.ThunderRT6FormDC
+            thunderrtformdc.TypeKeys("{F3}")
+            puhelin_el = thunderrtformdc[u'44']
+            saapuu_el = thunderrtformdc[u'16']
+            lahtee_el = thunderrtformdc[u'17']
+            maara_el = thunderrtformdc[u'13']
+            aikuisia_el = thunderrtformdc[u'11']
+            tyyppi_el = thunderrtformdc[u'14']
+            hinta_el = thunderrtformdc[u'32']
+            email_el = thunderrtformdc[u'35']
+            yritys_el = thunderrtformdc[u'40']
+            agennti_id_el = thunderrtformdc[u'46']
+            agentti_kontekti_1_el = thunderrtformdc[u'47']
+            agentti_kontekti_2_el = thunderrtformdc[u'48']
+            agentti_yritys_el = thunderrtformdc[u'49']
+            agentti_puhelin_el = thunderrtformdc[u'50']
+            tuloviesti_el = thunderrtformdc[u'12']
+            info_el = thunderrtformdc[u'52']
+            sukunimi_el = thunderrtformdc[u'2']
+            etunimi_el = thunderrtformdc[u'41']
+            hintaryhma_el = thunderrtformdc[u'ThunderRT6ComboBox11']
+            maksutapa_el = thunderrtformdc[u'ThunderRT6ComboBox8']
+            varausreitti_el = thunderrtformdc[u'ThunderRT6ComboBox5']
+            tallenna_el = thunderrtformdc[u'ThunderRT6CommandButton7']
+            etunimi_el.TypeKeys(name.split(" ")[0])
+            sukunimi_el.TypeKeys(name.split(" ")[1])
+            saapuu_el.TypeKeys(arrival)
+            lahtee_el.TypeKeys(departure)
+            info_el.TypeKeys(comment)
+            puhelin_el.TypeKeys(number)
+            _el.TypeKeys()
+            _el.TypeKeys()
+            _el.TypeKeys()
+            _el.TypeKeys()
+            _el.TypeKeys()
+            _el.TypeKeys()
             
-        #if(reservation_exists(name, arrival,departure)):
+            go_to_bookings()
+            
+
+
+        
         """
         TODO:
-        check if exists in hotellinx
-        if doesn't:
             fill details
             open reservation
             get card data
             fill it under "Tilausm."
         """
-        pass        
+        pass
 
 def current_page():
     page = titles[driver.title]
@@ -166,7 +224,7 @@ def reservation_exists(name, arrival, leave):
     return True
     
 def parse_date(txt):
-    return str(re.search('(\d{2}(?= ))',txt).group(0))+str(months[re.search('[A-z]+(?!,)(?= )',txt).group(0)])+str(re.search('(\d{4})',txt).group(0))
+    return str(re.search('(\d{2}(?= ))',txt).group(0))+str(months[re.search('[A-z]+(?!,)(?= )',txt).group(0)]).zfill(2)+str(re.search('(\d{4})',txt).group(0))
 
 def end():
     f.close()
