@@ -102,7 +102,7 @@ def loop_bookings():
         enter_function()
         return False
     bookings = driver.execute_script("return $('tbody>tr')")
-    links = driver.execute_scrit("return $('tr>td.align_right>a')")
+    links = driver.execute_script("return $('tr>td.align_right>a')")
     index = -1
     for i in bookings:
         index +=1
@@ -161,18 +161,16 @@ def loop_bookings():
             lahtee_el.TypeKeys(departure)
             info_el.TypeKeys(comment)
             puhelin_el.TypeKeys(number)
+            """
             _el.TypeKeys()
             _el.TypeKeys()
             _el.TypeKeys()
             _el.TypeKeys()
             _el.TypeKeys()
             _el.TypeKeys()
-            
+            """
+            return False
             go_to_bookings()
-            
-
-
-        
         """
         TODO:
             fill details
@@ -237,29 +235,36 @@ def log(txt):
 def search_reservation(name="",arrival="",departure=""):
     app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
     thunderrtformdc = app.ThunderRT6FormDC
+    bring_front(thunderrtformdc)
     menu_item = thunderrtformdc.MenuItem(u'Etsi->&Varaukset...\tF7')
     menu_item.Click()
     thunderrtformdc2 = app.Varaukset
     thunderrttextbox = thunderrtformdc2[u'Edit4']
-    thunderrttextbox.ClickInput()
-    thunderrttextbox.TypeKeys(name.split(" ")[0])
-    edit = thunderrtformdc2[u'Edit3']
-    edit.ClickInput()
-    edit.TypeKeys(arrival)
-    thunderrtcommandbutton = thunderrtformdc2[u'H&ae']
-    thunderrtcommandbutton.Click()
-    time.sleep(1)
-    listviewwndclass = thunderrtformdc.Children()[15]
-    if(listviewwndclass.ItemCount()==0):
-        thunderrtformdc.TypeKeys("{ESC}")
-        return False
-    else:
-        thunderrtformdc.TypeKeys("{ESC}")
-        return True
-    
+    for i in range(2):
+        thunderrttextbox.ClickInput()
+        thunderrttextbox.TypeKeys("{BACKSPACE}"*25)
+        thunderrttextbox.TypeKeys(name.split(" ")[i])
+        edit = thunderrtformdc2[u'Edit3']
+        edit.ClickInput()
+        edit.TypeKeys(arrival)
+        thunderrtcommandbutton = thunderrtformdc2[u'H&ae']
+        thunderrtcommandbutton.Click()
+        time.sleep(1)
+        listviewwndclass = thunderrtformdc.Children()[15]
+        if(listviewwndclass.ItemCount()>0):
+            thunderrtformdc.TypeKeys("{ESC}")
+            return True
+        else:
+            continue
+    thunderrtformdc.TypeKeys("{ESC}")
+    return False
+
+def bring_front(window):
+    window.Minimize()
+    window.Maximize()
+    window.SetFocus()
 if(login()):
     go_to_bookings()
     loop_bookings()
 end()
-
 
