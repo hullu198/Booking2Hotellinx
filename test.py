@@ -129,16 +129,18 @@ def loop_bookings():
             links[index].click()
             solve()
             number = driver.execute_script('return $(".phone-info")[0].innerText').replace(" ","")
-            room_type = driver.execute_script('return $("tbody>tr:eq(4)>td:eq(1)").text()').strip()    
+            room_type = driver.execute_script('return $("tbody>tr:eq(4)>td:eq(1)").text()').strip()
+            # TODO:
+            # It seems like these are not correct, some of them change  (seems to bee only u'*' elements
             app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
             thunderrtformdc = app.ThunderRT6FormDC
             thunderrtformdc.TypeKeys("{F3}")
             puhelin_el = thunderrtformdc[u'44']
-            saapuu_el = thunderrtformdc[u'16']
-            lahtee_el = thunderrtformdc[u'17']
+            saapuu_el = thunderrtformdc[u'14']
+            lahtee_el = thunderrtformdc[u'15']
             maara_el = thunderrtformdc[u'13']
             aikuisia_el = thunderrtformdc[u'11']
-            tyyppi_el = thunderrtformdc[u'14']
+            tyyppi_el = thunderrtformdc[u'ThunderRT6ComboBox"']
             hinta_el = thunderrtformdc[u'32']
             email_el = thunderrtformdc[u'35']
             yritys_el = thunderrtformdc[u'40']
