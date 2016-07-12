@@ -16,6 +16,7 @@ titles = {'Booking · Booking.com': 'booking',
           '· Booking.com': 'verification',
           'Unacknowleged Reservations · Booking.com': 'unacknowleged'
           }
+elements = []
 #luuppaa varaukset läpi
 #Lue varauksen tiedot verkosta
 #Hae hotellinxista onko samanlainen varaus jo olemassa
@@ -83,7 +84,9 @@ def verification():
     driver.execute_script("""$('select[name="phone_id_sms"] option:first-child').attr("selected", "selected");""")
     driver.find_elements_by_class_name("send-me-pin")[1].click()
     input("Press enter after you have entered pin correctly: ")
+    #Maybe ask to input pin to input?
     #Set focus to pin element
+    #Handle if pressed "continue" or something, twice
     if(len(driver.find_elements_by_class_name("success"))>0):
         driver.execute_script('$("a.btn-default")[0].click()')
         return True
@@ -91,9 +94,7 @@ def verification():
         driver.find_element_by_class_name("send-me-pin").click()
         enter_function()
         log("Didn't find success text, abort")
-    #Send sms to right number
     #Any way to verificate automatically?
-    #continue executing when number has been entered
 
 def loop_bookings():
     if(str(driver.title) != "Bookings · Booking.com"):
@@ -112,7 +113,34 @@ def loop_bookings():
         arrival = parse_date(values[6].text)
         departure = parse_date(values[7].text)
         total = str(re.search('([0-9]+)',values[9].text).group(0))
-        comment = values[3]
+        comment = values[3].text
+        yritys = ""
+        kontakti_0 = ""
+        kontakti_1 = ""
+        puhelin = ""
+        email = ""
+        agentti_yritys = ""
+        agentti_id = ""
+        agentti_kontakti_0 = ""
+        agentti_kontakti_1 = ""
+        agentti_puhelin = ""
+        agentti_laskuta = False
+        hintaryhma = ""
+        segmentti = ""
+        info = comment
+        tyyppi = ""
+        saapuu = arrival
+        lahtee = departure
+        huone_maara = "1"
+        aikuisia = "1"
+        lapsia = "0"
+        tuloviesti = ""
+        kampanja = ""
+        ryhma_id = ""
+        hinta = ""
+        ennakko = ""
+        virkailija = ""
+        summa = total
         log(name + " " + arrival + " " + departure)
         if(search_reservation(name,arrival,departure)):
             log("reservation for "+name+" on "+arrival + " exists")
@@ -135,44 +163,26 @@ def loop_bookings():
             app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
             thunderrtformdc = app.ThunderRT6FormDC
             thunderrtformdc.TypeKeys("{F3}")
-            puhelin_el = thunderrtformdc[u'44']
-            saapuu_el = thunderrtformdc[u'14']
-            lahtee_el = thunderrtformdc[u'15']
-            maara_el = thunderrtformdc[u'13']
-            aikuisia_el = thunderrtformdc[u'11']
-            tyyppi_el = thunderrtformdc[u'ThunderRT6ComboBox"']
-            hinta_el = thunderrtformdc[u'32']
-            email_el = thunderrtformdc[u'35']
-            yritys_el = thunderrtformdc[u'40']
-            agennti_id_el = thunderrtformdc[u'46']
-            agentti_kontekti_1_el = thunderrtformdc[u'47']
-            agentti_kontekti_2_el = thunderrtformdc[u'48']
-            agentti_yritys_el = thunderrtformdc[u'49']
-            agentti_puhelin_el = thunderrtformdc[u'50']
-            tuloviesti_el = thunderrtformdc[u'12']
-            info_el = thunderrtformdc[u'52']
-            sukunimi_el = thunderrtformdc[u'2']
-            etunimi_el = thunderrtformdc[u'41']
-            hintaryhma_el = thunderrtformdc[u'ThunderRT6ComboBox11']
-            maksutapa_el = thunderrtformdc[u'ThunderRT6ComboBox8']
-            varausreitti_el = thunderrtformdc[u'ThunderRT6ComboBox5']
-            tallenna_el = thunderrtformdc[u'ThunderRT6CommandButton7']
-            etunimi_el.TypeKeys(name.split(" ")[0])
-            sukunimi_el.TypeKeys(name.split(" ")[1])
+            time.sleep(1)
+            #Thos f*cking elements keep changing their id's, we have to do this with pure keyboard input
+            thunderrtformdc.TypeKeys(name.split(" ")[1]+"{TAB}"+name.split(" ")[0]+"{TAB}")
+            """
             saapuu_el.TypeKeys(arrival)
+            saapuu_el.DrawOutline()
+            input(arrival)
             lahtee_el.TypeKeys(departure)
+            lahtee_el.DrawOutline()
+            input(departure)
             info_el.TypeKeys(comment)
+            info_el.DrawOutline()
+            input()
             puhelin_el.TypeKeys(number)
+            _el.DrawOutline()
+            input()
+            
             """
-            _el.TypeKeys()
-            _el.TypeKeys()
-            _el.TypeKeys()
-            _el.TypeKeys()
-            _el.TypeKeys()
-            _el.TypeKeys()
-            """
-            return False
             go_to_bookings()
+            return False
         """
         TODO:
             fill details
@@ -241,6 +251,7 @@ def search_reservation(name="",arrival="",departure=""):
     menu_item = thunderrtformdc.MenuItem(u'Etsi->&Varaukset...\tF7')
     menu_item.Click()
     thunderrtformdc2 = app.Varaukset
+    #click "saapuvat"
     thunderrttextbox = thunderrtformdc2[u'Edit4']
     for i in range(2):
         thunderrttextbox.ClickInput()
