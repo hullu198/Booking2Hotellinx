@@ -95,7 +95,53 @@ def verification():
         enter_function()
         log("Didn't find success text, abort")
     #Any way to verificate automatically?
-
+def test():
+    name = "Anssi Tenhunen"
+    arrival = "140716"
+    departure = "170716"
+    total = "249"
+    comment = "Tällä testataan toimiiko ohjelma"
+    yritys = "Tenhusen syyhysormi"
+    kontakti_0 = "kontakti0"
+    kontakti_1 = "kontakti_1"
+    puhelin = "+358 45 898 2272"
+    email = "anssi.tenhunen@gmail.com"
+    viite = "viite"
+    agentti_yritys = "yritys"
+    agentti_id = "id"
+    agentti_kontakti_0 = "kontakti_0"
+    agentti_kontakti_1 = "kontakti_1"
+    agentti_puhelin = "puhelin"
+    agentti_laskuta = False
+    hintaryhma = "CN"
+    segmentti = ""
+    info = comment
+    tyyppi = "D"
+    saapuu = arrival
+    lahtee = departure
+    huone_maara = "1"
+    aikuisia = "2"
+    lapsia = "1"
+    lisat = "3"
+    vapaat = "4"
+    tuloviesti = "Hola hola!"
+    kampanja = ""
+    ryhma_id = ""
+    hinta = "D"
+    ennakko = ""
+    varausreitti = "b"
+    virkailija = ""
+    summa = total
+    app = Application().Connect(title=u'FrontOffice I-S - Kioski vastaanotto', class_name='ThunderRT6FormDC')
+    thunderrtformdc = app.ThunderRT6FormDC
+    bring_front(thunderrtformdc)
+    thunderrtformdc.TypeKeys("{F3}")
+    time.sleep(1)
+    #Thos f*cking elements keep changing their id's, we have to do this with pure keyboard input
+    thunderrtformdc.TypeKeys(name.split(" ")[1]+"{TAB}"+name.split(" ")[0]+"{TAB}"+ yritys+"{TAB}"+kontakti_0+"{TAB}"+kontakti_1+"{TAB}"+puhelin+"{TAB}"+"{TAB}"+email+"{TAB}"+"{TAB}"+viite+"{TAB}"+"{TAB}"+agentti_yritys+"{TAB}"+agentti_id+"{TAB}"+agentti_kontakti_0+"{TAB}"+agentti_kontakti_1+"{TAB}"+agentti_puhelin+"{TAB}"+"{TAB}"+"{TAB}"+hintaryhma+"{TAB}"+segmentti+"{TAB}"+info+"{TAB}"+"{TAB}"+tyyppi+"{TAB}"+saapuu+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+lahtee+"{TAB}"+"{BACKSPACE}"*3+huone_maara+"{TAB}"+"{TAB}"+"{BACKSPACE}"*3+aikuisia+"{TAB}"+"{BACKSPACE}"*3+lapsia+"{TAB}"+"{TAB}"+lisat+"{TAB}"+vapaat+"{TAB}"+tuloviesti+"{TAB}"+kampanja+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+ryhma_id+"{TAB}"+"{TAB}"+hinta+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+ennakko+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+varausreitti+"{TAB}"+virkailija,with_spaces=True)
+    time.sleep(1)
+    input("Done writing, is everything correct?")
+    
 def loop_bookings():
     if(str(driver.title) != "Bookings · Booking.com"):
         log("incorrect page, it's " + str(driver.title))
@@ -119,13 +165,14 @@ def loop_bookings():
         kontakti_1 = ""
         puhelin = ""
         email = ""
+        viite = ""
         agentti_yritys = ""
         agentti_id = ""
         agentti_kontakti_0 = ""
         agentti_kontakti_1 = ""
         agentti_puhelin = ""
         agentti_laskuta = False
-        hintaryhma = ""
+        hintaryhma = "c"+""
         segmentti = ""
         info = comment
         tyyppi = ""
@@ -134,11 +181,14 @@ def loop_bookings():
         huone_maara = "1"
         aikuisia = "1"
         lapsia = "0"
+        lisat = "0"
+        vapaat = "0"
         tuloviesti = ""
         kampanja = ""
         ryhma_id = ""
         hinta = ""
         ennakko = ""
+        varausreitti = "b"
         virkailija = ""
         summa = total
         log(name + " " + arrival + " " + departure)
@@ -156,16 +206,21 @@ def loop_bookings():
             log("Open reservation at Booking")
             links[index].click()
             solve()
-            number = driver.execute_script('return $(".phone-info")[0].innerText').replace(" ","")
-            room_type = driver.execute_script('return $("tbody>tr:eq(4)>td:eq(1)").text()').strip()
+            puhelin = driver.execute_script('return $(".phone-info")[0].innerText').replace(" ","")
+            tyyppi = driver.execute_script('return $("tbody>tr:eq(4)>td:eq(1)").text()').strip()
             # TODO:
             # It seems like these are not correct, some of them change  (seems to bee only u'*' elements
+            # end of title after "-" changes
             app = Application().Connect(title=u'FrontOffice I-S - Hotelli', class_name='ThunderRT6FormDC')
             thunderrtformdc = app.ThunderRT6FormDC
             thunderrtformdc.TypeKeys("{F3}")
             time.sleep(1)
             #Thos f*cking elements keep changing their id's, we have to do this with pure keyboard input
-            thunderrtformdc.TypeKeys(name.split(" ")[1]+"{TAB}"+name.split(" ")[0]+"{TAB}")
+            thunderrtformdc.TypeKeys(name.split(" ")[1]+"{TAB}"+name.split(" ")[0]+"{TAB}"+ yritys+"{TAB}"+kontakti_0+"{TAB}"+kontakti_1+"{TAB}"+puhelin+"{TAB}"+"{TAB}"+email+"{TAB}"+"{TAB}"+viite+"{TAB}"+"{TAB}"+agentti_yritys+"{TAB}"+agentti_id+"{TAB}"+agentti_kontakti_0+"{TAB}"+agentti_kontakti_1+"{TAB}"+agentti_puhelin+"{TAB}"+"{TAB}"+"{TAB}"+hintaryhma+"{TAB}"+segmentti+"{TAB}"+info+"{TAB}"+"{TAB}"+tyyppi+"{TAB}"+saapuu+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+lahtee+"{TAB}"+"{BACKSPACE}"*3+huone_maara+"{TAB}"+"{TAB}"+"{BACKSPACE}"*3+aikuisia+"{TAB}"+"{BACKSPACE}"*3+lapsia+"{TAB}"+"{TAB}"+lisat+"{TAB}"+vapaat+"{TAB}"+tuloviesti+"{TAB}"+kampanja+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+ryhma_id+"{TAB}"+"{TAB}"+hinta+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+ennakko+"{TAB}"+"{TAB}"+"{TAB}"+"{TAB}"+varausreitti+"{TAB}"+virkailija,with_spaces=True)
+            time.sleep(1)
+            if(input("Done writing, is everything correct? (n or blank")=="n"):
+                break
+            thunderrtformdc.TypeKeys("{F4}")
             """
             saapuu_el.TypeKeys(arrival)
             saapuu_el.DrawOutline()
